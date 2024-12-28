@@ -7,6 +7,7 @@ int s21_sprintf(char *str, const char *format, ...) {
   va_list args;
   va_start(args, format);
   char *start = str;
+  int zero_str = 0, zero_flag = 0;
   while (*format) {
     if (*format != '%') {
       *str++ = *format;
@@ -30,71 +31,63 @@ int s21_sprintf(char *str, const char *format, ...) {
       }
       format++;
       // спецификаторы
+      char *p_str = s21_NULL;
+      p_str = calloc(1024, sizeof(char));
       switch (*format) { //
         case 'c'://diana
-          break;
+            spec_c(p_str, arg, spec, zero_flag);
+            break;
         case 'd'://ksenia
-          break;
+            break;
         case 'i':
-          break;
+            break;
         case 'f'://diana
-          break;
+            spec_f(p_str, args, spec);
+            break;
         case 's'://ksenia
           break;
         case 'u':
           break;
       }
       format++;
-      /*if (*format == 'd') {
-        int value = va_arg(args, int);  // Извлекаем число
-        char temp[50];
-        sprintf(temp, "%d", value);  // Преобразуем число в строку
-
-        int len = strlen(temp);
-        if (value < 0) len--;  // Учитываем знак для отрицательных чисел
-        int zero_padding =
-            (specific.accuracy > len) ? specific.accuracy - len : 0;
-
-        // Если число отрицательное, добавляем место для знака
-        if (value < 0 && specific.accuracy > len) zero_padding++;
-
-        // Выводим пробелы слева, если ширина больше
-        if (specific.width > len + zero_padding && !specific.minus) {
-          int padding = specific.width - len - zero_padding;
-          while (padding-- > 0) {
-            *str++ = ' ';
-          }
-        }
-
-        // Копируем знак для отрицательных чисел
-        if (value < 0) {
-          *str++ = '-';
-          strcpy(temp, temp + 1);  // Убираем знак из строки
-        }
-
-        // Выводим ведущие нули для точности
-        while (zero_padding-- > 0) {
-          *str++ = '0';
-        }
-
-        // Копируем само число
-        strcpy(str, temp);
-        str += strlen(temp);
-
-        // Выводим пробелы справа, если выравнивание по левому краю
-        if (specific.width > len + zero_padding && specific.minus) {
-          int padding = specific.width - len - zero_padding;
-          while (padding-- > 0) {
-            *str++ = ' ';
-          }
-        }
-
-        format++;*/
-    }  //
   }
   *str = '\0';
   va_end(args);
   return (str - start);
+}
+
+void spec_f(char *p_str, va_list *args, struct *spec){
+    double double_number = 0;
+    long double long_number = 0;
+    switch (spec->length_l){
+        case 'L':
+            long_number = va_arg(*args, long double);
+            //функция для преобразования в строку
+            break;
+        case 'l':
+        default:
+            double_number = va_arg(*args, double);
+            //функция для преобразования в строку
+            break;
+    }
+    //функция, обрабатывающая доп штуки строк для чисел с запятой
+}
+
+void spec_c(char *p_str, va_list *arg, struct *spec, int *zero_flag){
+    if (*zero_flag == 0){
+        p_str[0] = va_arg(*args, int);
+        if (p_str[0] == 0) {
+            spec->zero_simbol++;
+            *zero_flag = 1;
+        }
+        p_str[1] = '\0';
+    }
+    else {
+        spec->zero_simbol++;
+        p_str[0] = '\0';
+    }
+    //функция, обрабаывающая флаги форматирования(выравнивание) s21_string_flags(formats, p_str);
+    //функция, обрабатывающая ширины  s21_string_width(formats, p_str);
 }
 
 const char *parser_flags(const char *format, spec *specific) {
